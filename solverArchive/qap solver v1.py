@@ -50,17 +50,17 @@ x = [[Binary(f"facility_{x}_at_location{y}") for y in locations] for x in facili
 # cost = flow_matrix[j, k] * distance_matrix[m, n] * x[j, m] * x[k, n]
 #where j, k are facilities, m, n are locations, x is whether a facility is at a location
 
-cqm.set_objective(np.sum([[[[flow_matrix[j][k] * distance_matrix[m][n] * x[j][m] * x[k][n]
-                          for j in range(len(locations))]for k in range(len(locations))]
-                        for m in range(len(facilities))]
-                       for n in range(len(facilities))]))
+cqm.set_objective(np.sum(np.fromiter((flow_matrix[j][k] * distance_matrix[m][n] * x[j][m] * x[k][n]
+                          for j in range(len(locations)) for k in range(len(locations))
+                        for m in range(len(facilities))
+                       for n in range(len(facilities))),dtype=np.dtype(object))))
 
 for i in range(len(locations)):
     cqm.add_constraint(sum(x[i]) == 1)
 for i in range(len(facilities)):
     cqm.add_constraint(np.sum([x[j][i] for j in range(len(locations))]) == 1)
 
-sampleset = sampler.sample_cqm(cqm, time_limit=5, label="CAQ testing")
+sampleset = sampler.sample_cqm(cqm, time_limit=10, label="CAQ testing")
 
 def parse_best(sampleset):
 
