@@ -58,9 +58,25 @@ feasible_solutions = solution.filter(lambda d: d.is_feasible)
 
 best = feasible_solutions.first
 
-matching = [(i, j, t) for (i, j, t), var in x.items() if best.sample[f"x_{i}_{j}_{t}"] == 1]
-print(f"Best match: {matching}")
+best_solution = best.sample
+
+# separating matrices  
+best_match = np.zeros((T, N, N), dtype=int)
+
+for t in range(T):
+    for i in range(N):
+        for j in range(N):
+            if best_solution[f"x_{i}_{j}_{t}"] == 1:
+                best_match[t, i, j] = 1
+
+# Print the best match as a set of matrices
+for t in range(T):
+    print(f"best match for time {t}:")
+    print(best_match[t])
+
+
 print(f"Best cost: {best.energy}")
+
 
 end = time.time()
 print(end - start)
