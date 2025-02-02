@@ -1,7 +1,7 @@
 import numpy as np
 import dimod
 from dwave.system import LeapHybridCQMSampler
-from itertools import product
+from itertools import product, compress
 import time 
 
 start = time.time()
@@ -32,9 +32,13 @@ x = {(i, j): dimod.Binary((i, j)) for i in range(N) for j in range(N)}
 
 print("1")
 
+FD_einsum = np.einsum("jk,mn->jkmn", F, D)
 
-objective = sum(F[j, k] * D[m, n] * x[(j, m)] * x[(k, n)] 
-                for j, k, m, n in product(range(N), repeat=4))
+FD_flat = FD_einsum.reshape(N*N, N*N)
+
+x_flat = np.array([x[(j, m)] for j in range(N) for m in range(N)])
+
+objective = (x_flat @ FD_flat @ x_flat)
 
 cqm.set_objective(objective)
 
@@ -53,16 +57,19 @@ for j in range(N):
 print("4")
 
 sampler = LeapHybridCQMSampler()
-solution = sampler.sample_cqm(cqm)
+solutions = sampler.sample_cqm(cqm)
 
 print("5")
 
-feasible_solutions = solution.filter(lambda d: d.is_feasible)
+# test with both feasible_solutions, and without feasible solutions to see if there is a performance difference
+# feasible_solutions = solution.filter(lambda d: d.is_feasible)
+# feasible_solutions = list(compress(solution, (d.is_feasible for d in solution)))
     
 print("6")
 
-best = feasible_solutions.first
-matching = [(i, j) for (i, j), var in x.items() if best.sample[(i, j)] == 1]
+best = solutions.first
+# best = feasible_solutions.first
+matching = [key for key in x.keys() if best.sample[key] == 1]
 print(f"best match: {matching}")
 print(f"best cost {best.energy}")
 
