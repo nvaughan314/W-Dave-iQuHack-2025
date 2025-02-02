@@ -67,8 +67,9 @@ def initCalcTotalCostWithTimeComponent(distance_matrix, flow_matrix, costToMove=
     for i in range(timesteps):
         minCost = float('inf')
         for assignment_perm in itertools.permutations(assignment[i]):
-            cost = calculateTotalCostWithTimeComponent(distance_matrix, flow_matrix, list(assignment_perm), 
-                                                       i, costToMove, previousAssignment)
+            cost = calculateTotalCostWithTimeComponent(
+                distance_matrix, flow_matrix, list(assignment_perm), 
+                i, costToMove, previousAssignment)
             if i < 2:
                 print(f"cost: {cost} for assignment_perm: " +
                       f"{assignment_perm} and timestep: {i} where minCost: {minCost}")
