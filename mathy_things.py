@@ -1,13 +1,33 @@
 import dimod
 from dwave.system import LeapHybridSampler
 from itertools import product
+import numpy as np
+import csv
 
 # a and b sets 
 # A = {0, 1, 2} # facilities
 # B = {0, 1, 2} # locations
 
-A = {0, 1, 2, 3, 4} 
-B = {0, 1, 2, 3, 4} 
+# Getting location information 
+readerLocations = csv.reader(open("locations.csv", "r"), delimiter=",")
+locationList = list(readerLocations)
+locations = np.array(locationList).astype("float")
+nLocations = len(locations)
+
+# Getting distance information
+readerDistances = csv.reader(open("distances.csv", "r"), delimiter=",")
+distanceList = list(readerDistances)
+distances = np.array(distanceList).astype("float")
+
+# Getting flow information
+readerFlows = csv.reader(open("flows.csv", "r"), delimiter=",")
+flowList = list(readerFlows)
+flows = np.array(flowList).astype("float")
+
+#A = {0, 1, 2, 3, 4} 
+A = {range(nLocations)}
+#B = {0, 1, 2, 3, 4} 
+B = {range(nLocations)}
 
 # edge weights/costs 
 # weights = {
@@ -30,17 +50,21 @@ B = {0, 1, 2, 3, 4}
 #      [1, 7, 0]]
 
 
-F = [[0, 1, 7, 2, 1],
-     [1, 0, 9, 27, 5],
-     [1, 67, 0, 6, 3],
-     [2, 7, 1, 0, 2], 
-     [7, 8, 0, 35, 0]]
+# F = [[0, 1, 7, 2, 1],
+#      [1, 0, 9, 27, 5],
+#      [1, 67, 0, 6, 3],
+#      [2, 7, 1, 0, 2], 
+#      [7, 8, 0, 35, 0]]
 
-D = [[0, 1, 1, 2, 4],
-     [1, 0, 9, 66, 7],
-     [1, 7, 0, 3, 18],
-     [3, 5, 2, 0, 8],
-     [8, 3, 1, 1, 0]]
+F = flows
+
+# D = [[0, 1, 1, 2, 4],
+#      [1, 0, 9, 66, 7],
+#      [1, 7, 0, 3, 18],
+#      [3, 5, 2, 0, 8],
+#      [8, 3, 1, 1, 0]]
+
+D = distances
 
 
 def matrix_product_dict(F, D):

@@ -49,7 +49,6 @@ x = [[Binary(f"facility_{x}_at_location{y}") for y in locations] for x in facili
 
 # cost = flow_matrix[j, k] * distance_matrix[m, n] * x[j, m] * x[k, n]
 #where j, k are facilities, m, n are locations, x is whether a facility is at a location
-
 cqm.set_objective(np.sum(np.fromiter((flow_matrix[j][k] * distance_matrix[m][n] * x[j][m] * x[k][n]
                           for j in range(len(locations)) for k in range(len(locations))
                         for m in range(len(facilities))
